@@ -33,6 +33,7 @@ Without `DATABASE_URL`, a local SQLite file (`techcareerfit.db`) is used.
 | `CORS_ORIGINS` | yes | Comma-separated frontend URLs |
 | `JWT_EXPIRE_MINUTES` | no | Token lifetime, default 60 |
 | `ADMIN_EMAILS` | no | Emails that become admins when they register |
+| `COURSES_CSV_PATH` | no | Course catalogue for the roadmap; defaults to the included `data/courses.csv` |
 | `MARKET_CSV_PATH` | no | Kaggle dataset path; defaults to the included `data/ai_jobs_market_2025_2026.csv` |
 | `SMTP_*`, `FRONTEND_URL` | no | Email reminders and reset emails; disabled when `SMTP_HOST` is empty |
 
@@ -71,6 +72,13 @@ Tables are created automatically on first start. If you change a model later, ad
 | Market | `GET /market/roles`, `GET /market/insights?role=` |
 | Notifications | `GET /notifications` |
 | Admin | `GET /admin/stats`, `GET /admin/users`, `PATCH /admin/users/{id}`, `GET/POST/DELETE /admin/resources` |
+
+### Datasets
+
+- **Market insights:** Kaggle *AI Jobs Market 2025-2026* (`data/ai_jobs_market_2025_2026.csv`).
+- **Learning roadmap:** Kaggle Coursera and edX course datasets, cleaned into `data/courses.csv` by
+  `python -m scripts.build_courses`. Each missing skill gets up to three ranked courses; admin-curated
+  resources appear first. See `data/README.md` for details and known data issues.
 
 ### How the score works
 

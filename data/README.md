@@ -1,18 +1,31 @@
-# Market data
+# Data
 
-`ai_jobs_market_2025_2026.csv` is the Kaggle **AI Jobs Market 2025-2026** dataset used by the Market insights page.
+## Market insights: `ai_jobs_market_2025_2026.csv`
 
-- 1,500 job postings from January 2025 to March 2026
-- 25 AI job titles in 12 categories, four experience levels (Entry, Mid, Senior, Lead)
-- Salaries are **annual, in US dollars**
-- 14 countries plus "Global". **There are no South African postings**, so the app labels the data as global.
+Kaggle **AI Jobs Market 2025-2026**: 1,500 job postings from January 2025 to March 2026, 25 AI job titles,
+four experience levels, annual salaries in **US dollars**, 14 countries plus "Global". **There are no South
+African postings**, so the app labels the data as global. Used by `app/services/market.py`.
 
-Columns used by `app/services/market.py`: `job_title`, `job_category`, `experience_level`, `annual_salary_usd`,
-`country`, `remote_work`, `required_skills` (pipe-separated), `demand_score`, `demand_growth_yoy_pct`,
-`posting_year`, `posting_month`.
+## Learning roadmap: `courses.csv`
 
-Before submitting, record the dataset's author, Kaggle URL and licence from the dataset page in your
-documentation. The distribution of the data (for example, almost equal numbers of postings per experience
-level and education level) suggests it may be synthetic, so check the dataset description and say so if it is.
+Built from two Kaggle course datasets in `raw/` by `python -m scripts.build_courses`:
 
-To use a different file, set `MARKET_CSV_PATH`. It must have the same columns.
+| Raw file | Rows kept | Notes |
+|---|---|---|
+| `raw/coursera_course_dataset_v3.csv` | courses that teach at least one recognised skill | 220 rows have no URL and a few URLs belong to another course; those get a Coursera search link and `link_type=search` |
+| `raw/edx.csv` | English courses that teach at least one recognised skill | Titles lost spaces at line breaks; the script repairs most of them |
+
+Each course is tagged with the same canonical skills the CV scanner uses (`app/services/ats.py`), so a missing
+skill in a report maps directly to courses. `app/services/courses.py` ranks them: skill named in the title,
+focused on few skills, beginner level, rating, review count and a direct link.
+
+Skills with no course in either dataset (for example FastAPI, TypeScript, LangChain, RAG, CUDA) fall back to
+the built-in links in `app/services/learning.py`. Admin-curated resources always appear first.
+
+The Udemy, Skillshare and older Coursera files from the same downloads were not used: they have no course
+links or no skills column.
+
+## Before submitting
+
+Record each dataset's author, Kaggle URL and licence in your references. The jobs dataset looks synthetic
+(almost equal postings per experience and education level), so check its description and say so if it is.

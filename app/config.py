@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     cors_origins: str = "http://localhost:5173"
     admin_emails: str = ""
     market_csv_path: str = "data/ai_jobs_market_2025_2026.csv"
+    courses_csv_path: str = "data/courses.csv"
     max_upload_mb: int = 5
 
     smtp_host: str = ""

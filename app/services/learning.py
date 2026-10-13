@@ -1,8 +1,16 @@
-"""Learning roadmap: maps missing skills to resources (curated by admins, with built-in defaults)."""
+"""Learning roadmap: maps missing skills to resources.
+
+Order of sources for each skill:
+  1. Resources curated by admins (learning_resources table)
+  2. Courses from the Kaggle Coursera and edX datasets (data/courses.csv)
+  3. Built-in defaults below, then a web search link as a last resort
+"""
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from ..config import get_settings
 from ..models import LearningResource, ResourceProgress
+from . import courses
 
 DEFAULTS: dict[str, list[dict]] = {
     "docker": [
@@ -25,18 +33,24 @@ DEFAULTS: dict[str, list[dict]] = {
 
 def resources_for(db: Session, skill: str) -> list[dict]:
     rows = db.scalars(select(LearningResource).where(LearningResource.skill == skill)).all()
-    items = [{"title": r.title, "provider": r.provider, "url": r.url, "level": r.level, "minutes": r.minutes,
-              "reason": r.reason, "curated": True} for r in rows]
+    items = [{"title": r.title, "provider": r.provider, "url": r.url, "level": r.level, "minutes": r.minutes, "duration": "",
+              "reason": r.reason, "source": "curated", "platform": "Curated", "rating": None, "link_type": "direct"} for r in rows]
+    for c in courses.for_skill(get_settings().courses_csv_path, skill):
+        items.append({"title": c["title"], "provider": c["provider"], "url": c["url"], "level": c["level"], "minutes": None,
+                      "duration": c["duration"], "reason": "", "source": "dataset", "platform": c["platform"],
+                      "rating": c["rating"], "link_type": c["link_type"], "type": c["type"]})
     if not items:
-        items = [dict(d, curated=False) for d in DEFAULTS.get(skill, [])]
+        items = [dict(d, duration="", source="default", platform="Docs", rating=None, link_type="direct") for d in DEFAULTS.get(skill, [])]
     if not items:
-        items = [{"title": f"Introduction to {skill}", "provider": "Web search", "curated": False, "level": "Beginner", "minutes": 45,
+        items = [{"title": f"Introduction to {skill}", "provider": "Web search", "source": "default", "platform": "Search", "level": "Beginner",
+                  "minutes": None, "duration": "", "rating": None, "link_type": "search",
                   "url": "https://www.google.com/search?q=learn+" + skill.replace(" ", "+")}]
     for it in items:
         it["skill"] = skill
         it["key"] = f"{skill}|{it['title']}"
+        it["curated"] = it["source"] == "curated"
         if not it.get("reason"):
-            it["reason"] = f"{skill} is asked for in the job ad but was not found in your CV."
+            it["reason"] = f"{skill[:1].upper() + skill[1:]} is asked for in the job ad but was not found in your CV."
     return items
 
 
