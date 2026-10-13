@@ -33,7 +33,7 @@ Without `DATABASE_URL`, a local SQLite file (`techcareerfit.db`) is used.
 | `CORS_ORIGINS` | yes | Comma-separated frontend URLs |
 | `JWT_EXPIRE_MINUTES` | no | Token lifetime, default 60 |
 | `ADMIN_EMAILS` | no | Emails that become admins when they register |
-| `MARKET_CSV_PATH` | no | Kaggle dataset path, see `data/README.md` |
+| `MARKET_CSV_PATH` | no | Kaggle dataset path; defaults to the included `data/ai_jobs_market_2025_2026.csv` |
 | `SMTP_*`, `FRONTEND_URL` | no | Email reminders and reset emails; disabled when `SMTP_HOST` is empty |
 
 ## Tests
