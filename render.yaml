@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: techcareerfit-api
+    runtime: docker
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CORS_ORIGINS
+        value: https://techcareerfit-1.onrender.com
+      - key: ADMIN_EMAILS
+        sync: false
+      - key: JWT_EXPIRE_MINUTES
+        value: "60"
